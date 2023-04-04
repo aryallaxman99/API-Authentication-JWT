@@ -1,10 +1,13 @@
+import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
 import createError from "http-errors";
-import "dotenv/config";
+
 import Authroute from "./Routes/Auth.js";
+import connect from "./db/connect.js";
 
 const app = express();
+
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
@@ -30,6 +33,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`server started at ${process.env.PORT}`);
+app.listen(process.env.PORT, (err) => {
+  if (!err) {
+    console.log(`server started at ${process.env.PORT}`);
+    connect();
+  }
 });
