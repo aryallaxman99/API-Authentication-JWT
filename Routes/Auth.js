@@ -1,19 +1,23 @@
 import express from "express";
 import createHttpError from "http-errors";
 import User from "../Models/userModel.js";
+import authSchema from "../controllers/validationSchema.js";
 const router = express.Router();
 
 router.post("/register", async (req, res, next) => {
-  console.log(req.body);
   try {
-    const { email, password } = req.body;
-    if (!email || !password) throw createHttpError.BadRequest();
+    const result = await authSchema.validateAsync(req.body);
 
-    const doesEmailExist = await User.findOne({ email: email });
+    const doesEmailExist = await User.findOne({ email: result.email });
     if (doesEmailExist) throw createHttpError.Conflict("Email already exists");
 
     const savedUser = await User.create(req.body);
+    savedUser
+      ? console.log("new user registered")
+      : console.log("something went wrong");
   } catch (error) {
+    // console.log(error);
+
     next(error);
   }
 });
