@@ -4,7 +4,7 @@ import appConfig from "../config/app_config.json" assert { type: "json" };
 const connection = async () => {
   try {
     await mongoose.connect(appConfig.uri);
-    console.log("connected to mongodb");
+    console.log("connected to mongoose");
   } catch (error) {
     console.error(error);
   }
