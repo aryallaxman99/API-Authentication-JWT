@@ -2,8 +2,8 @@ import express from "express";
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 import User from "../Models/userModel.js";
-import authSchema from "../controllers/validationSchema.js";
-import jwtHelper from "../controllers/jwtHelper.js";
+import authSchema from "../helpers/validationSchema.js";
+import jwtHelper from "../helpers/jwtHelper.js";
 
 const router = express.Router();
 router.post("/register", async (req, res, next) => {
