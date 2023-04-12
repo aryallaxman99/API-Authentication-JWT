@@ -7,7 +7,7 @@ const signAccessToken = (userId) => {
 
     const secret = process.env.ACCESS_TOKEN_SECRET;
     const options = {
-      expiresIn: "1h",
+      expiresIn: "10S",
       issuer: "local",
       audience: userId,
     };
@@ -26,11 +26,13 @@ const verifyAccessToken = (req, res, next) => {
   if (!req.headers["authorization"])
     return next(createHttpError.Unauthorized());
   const token = req.headers["authorization"].split(" ")[1];
-  // const bearerToken = authHeader.split(" ");
-  // const token = bearerToken[1];
+
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, payload) => {
     if (error) {
-      return next(createHttpError.Unauthorized());
+      const message = (error.name = "JsonWebTokenError"
+        ? "Unauthorized"
+        : error.message);
+      return next(createHttpError.Unauthorized(message));
     }
     req.payload = payload;
     next();
