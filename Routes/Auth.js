@@ -20,7 +20,9 @@ router.post("/register", async (req, res, next) => {
     const savedUser = await User.create(req.body);
 
     const acessToken = await jwtHelper.signAccessToken(savedUser.id);
-    res.send({ acessToken });
+    const refreshToken = await jwtHelper.signRefreshToken(savedUser.id);
+
+    res.send({ acessToken, refreshToken });
   } catch (error) {
     // console.log(error);
 
@@ -41,7 +43,8 @@ router.post("/login", async (req, res, next) => {
       throw createHttpError.Unauthorized("Username/Password not valid");
 
     const accessToken = await jwtHelper.signAccessToken(user.id);
-    res.send({ accessToken });
+    const refreshToken = await jwtHelper.signRefreshToken(user.id);
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isjoi === true)
       return next(createHttpError.BadRequest("Invalid username/ password"));
