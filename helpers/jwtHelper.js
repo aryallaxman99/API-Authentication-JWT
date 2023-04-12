@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
 
-const signAcessToken = (userId) => {
+const signAccessToken = (userId) => {
   return new Promise((resolve, reject) => {
     const payload = {};
 
@@ -22,6 +22,21 @@ const signAcessToken = (userId) => {
   });
 };
 
+const verifyAccessToken = (req, res, next) => {
+  if (!req.headers["authorization"])
+    return next(createHttpError.Unauthorized());
+  const token = req.headers["authorization"].split(" ")[1];
+  // const bearerToken = authHeader.split(" ");
+  // const token = bearerToken[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, payload) => {
+    if (error) {
+      return next(createHttpError.Unauthorized());
+    }
+    req.payload = payload;
+    next();
+  });
+};
 export default {
-  signAcessToken,
+  signAccessToken,
+  verifyAccessToken,
 };

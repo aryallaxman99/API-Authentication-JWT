@@ -19,7 +19,7 @@ router.post("/register", async (req, res, next) => {
     req.body.password = hash;
     const savedUser = await User.create(req.body);
 
-    const acessToken = await jwtHelper.signAcessToken(savedUser.id);
+    const acessToken = await jwtHelper.signAccessToken(savedUser.id);
     res.send({ acessToken });
   } catch (error) {
     // console.log(error);
@@ -40,7 +40,7 @@ router.post("/login", async (req, res, next) => {
     if (!isValidPassword)
       throw createHttpError.Unauthorized("Username/Password not valid");
 
-    const accessToken = await jwtHelper.signAcessToken(user.id);
+    const accessToken = await jwtHelper.signAccessToken(user.id);
     res.send({ accessToken });
   } catch (error) {
     if (error.isjoi === true)
