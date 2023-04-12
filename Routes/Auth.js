@@ -28,8 +28,25 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
-router.post("/login", (req, res, next) => {
-  res.send("login");
+router.post("/login", async (req, res, next) => {
+  try {
+    const result = await authSchema.validateAsync(req.body);
+
+    const user = await User.findOne({ email: result.email });
+    if (!user) throw createHttpError.NotFound("user not registered");
+
+    const isValidPassword = bcrypt.compareSync(result.password, user.password);
+
+    if (!isValidPassword)
+      throw createHttpError.Unauthorized("Username/Password not valid");
+
+    const accessToken = await jwtHelper.signAcessToken(user.id);
+    res.send({ accessToken });
+  } catch (error) {
+    if (error.isjoi === true)
+      return next(createHttpError.BadRequest("Invalid username/ password"));
+    next(error);
+  }
 });
 
 router.post("/refresh-token", (req, res, next) => {

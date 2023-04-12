@@ -13,7 +13,10 @@ const signAcessToken = (userId) => {
     };
 
     jwt.sign(payload, secret, options, (err, token) => {
-      if (err) reject(err);
+      if (err) {
+        console.log(err.message);
+        reject(createHttpError.InternalServerError());
+      }
       resolve(token);
     });
   });
