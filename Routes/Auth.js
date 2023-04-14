@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import User from "../Models/userModel.js";
 import authSchema from "../helpers/validationSchema.js";
 import jwtHelper from "../helpers/jwtHelper.js";
+import { verify } from "jsonwebtoken";
 
 const router = express.Router();
 router.post("/register", async (req, res, next) => {
@@ -52,8 +53,19 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-router.post("/refresh-token", (req, res, next) => {
-  res.send("refresh token");
+router.post("/refresh-token", async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw createHttpError.BadRequest();
+
+    const userId = await jwtHelper.verifyRefreshToken(refreshToken);
+    const accessToken = await jwtHelper.signAccessToken(userId);
+    const newRefreshToken = await jwtHelper.signRefreshToken(userId);
+
+    res.send({ accessToken, newRefreshToken });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete("/logout", (req, res, next) => {
