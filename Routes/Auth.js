@@ -68,8 +68,16 @@ router.post("/refresh-token", async (req, res, next) => {
   }
 });
 
-router.delete("/logout", (req, res, next) => {
-  res.send("logout");
+router.delete("/logout", async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) throw createHttpError.BadRequest();
+    const userId = await jwtHelper.verifyRefreshToken(refreshToken);
+    if (!userId) throw createHttpError.NotAcceptable();
+    res.status(200).send("user logout");
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;
